@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activities.RegisterActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/register_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@color/colorPrimary">
+    </android.support.v7.widget.Toolbar>
+
+    <EditText
+        android:id="@+id/register_phone_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Please input your phone"
+        android:inputType="number"
+        android:drawableLeft="@drawable/ic_phone"
+        android:drawablePadding="5dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/register_sms_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Please input verification code"
+            android:inputType="number"
+            android:layout_weight="3"
+            android:drawableLeft="@drawable/ic_verified"
+            android:drawablePadding="5dp"/>
+
+        <Button
+            android:id="@+id/send_sms_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Send"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/next_step_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Next step"/>
+</LinearLayout>

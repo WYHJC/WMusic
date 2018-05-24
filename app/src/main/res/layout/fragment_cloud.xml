@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="none"
+    tools:context=".fragment.CloudFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/cloud_banner_shape"
+                android:layout_weight="30"/>
+
+            <com.youth.banner.Banner
+                android:id="@+id/cloud_banner"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_weight="1">
+            </com.youth.banner.Banner>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/cloud_banner_shape"
+                android:layout_weight="30"/>
+        </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Recommend the playlist"
+            android:textColorHint="@color/colorPrimary"
+            android:background="@android:color/transparent"
+            android:drawableRight="@drawable/recommend_more_right"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/cloud_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
+</ScrollView>

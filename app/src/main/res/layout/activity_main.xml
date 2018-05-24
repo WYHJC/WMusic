@@ -1,0 +1,55 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.wyhjc.musicplayer.activities.MainActivity"
+    android:fitsSystemWindows="true"
+    android:id="@+id/main_drawer_layout"
+    tools:openDrawer="start">
+
+    <include
+        layout="@layout/main_activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@drawable/nav_view_background"
+        app:headerLayout="@layout/nav_view_header"
+        app:menu="@menu/nav_view_menu">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom">
+
+            <Button
+                android:id="@+id/settings_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@mipmap/settings_icon"
+                android:paddingLeft="30dp"
+                android:gravity="center_vertical"
+                android:drawablePadding="5dp"
+                android:layout_weight="1"
+                android:hint="Settings"
+                android:background="#00000000"/>
+
+            <Button
+                android:id="@+id/exit_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@mipmap/exit_icon"
+                android:paddingLeft="30dp"
+                android:gravity="center_vertical"
+                android:drawablePadding="5dp"
+                android:layout_weight="1"
+                android:hint="Exit"
+                android:background="#00000000"/>
+        </LinearLayout>
+    </android.support.design.widget.NavigationView>
+</android.support.v4.widget.DrawerLayout>

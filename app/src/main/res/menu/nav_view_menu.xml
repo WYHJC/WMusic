@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<group>
+    <item
+        android:id="@+id/nav_view_menu_my_info"
+        android:icon="@mipmap/nav_menu_my_info"
+        android:title="My infomation" />
+
+    <item
+        android:id="@+id/nav_view_menu_equalizer"
+        android:icon="@mipmap/nav_menu_music_equalizer"
+        android:title="Music equalizer" />
+
+    <item
+        android:id="@+id/nav_view_menu_dynamic_volume"
+        android:icon="@mipmap/nav_menu_dynamic_volume"
+        android:title="Dynamic volume" />
+
+    <item
+        android:id="@+id/nav_view_menu_close"
+        android:icon="@mipmap/nav_menu_close"
+        android:title="Set time to close" />
+</group>
+</menu>
