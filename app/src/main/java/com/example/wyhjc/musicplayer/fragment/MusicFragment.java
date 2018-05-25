@@ -2,8 +2,10 @@ package com.example.wyhjc.musicplayer.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
@@ -18,6 +20,8 @@ import com.example.wyhjc.musicplayer.activities.PlayActivity;
 import com.example.wyhjc.musicplayer.adapter.MusicFragmentAdapter;
 import com.example.wyhjc.musicplayer.model.MusicFragmentItem;
 import com.example.wyhjc.musicplayer.model.Playlist;
+import com.example.wyhjc.musicplayer.model.Song;
+import com.example.wyhjc.musicplayer.util.MusicUtil;
 
 import java.util.ArrayList;
 
@@ -27,10 +31,16 @@ public class MusicFragment extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private MusicFragmentAdapter mAdapter;
-    private Context mContext = getActivity();
+    private Context mContext;
 
     public MusicFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
     }
 
     @Override
@@ -76,9 +86,10 @@ public class MusicFragment extends Fragment {
         ArrayList<MusicFragmentItem> items = new ArrayList<MusicFragmentItem>();
         ArrayList<Playlist> createPlaylists = new ArrayList<Playlist>();
         ArrayList<Playlist> collectPlaylists = new ArrayList<Playlist>();
+        MusicUtil.initLocalAllPlaylists(mContext);
 
-        items.add(new MusicFragmentItem(R.mipmap.music_fragment_local_music, "Local music", 2));
-        items.add(new MusicFragmentItem(R.mipmap.music_fragment_recent_play, "Recent play", 8));
+        items.add(new MusicFragmentItem(R.mipmap.music_fragment_local_music, "Local music", MusicUtil.getLocalMusicCount()));
+        items.add(new MusicFragmentItem(R.mipmap.music_fragment_recent_play, "Recent play", 0));
         items.add(new MusicFragmentItem(R.mipmap.music_fragment_download, "Download", 0));
         results.addAll(items);
 

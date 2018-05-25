@@ -36,7 +36,7 @@ import com.example.wyhjc.musicplayer.view.ProgressView;
 
 public abstract class PlayerActivity extends AppCompatActivity {
 
-    private PlayerService mService;
+    protected PlayerService mService;
     private boolean mBound = false;
     private TextView mTimeView;
     private TextView mDurationView;
@@ -44,7 +44,7 @@ public abstract class PlayerActivity extends AppCompatActivity {
     private final Handler mUpdateProgressHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            final int position = mService.getPosition();
+            final int position = mService.getTime();
             final int duration = mService.getDuration();
             onUpdateProgress(position, duration);
             sendEmptyMessageDelayed(0, DateUtils.SECOND_IN_MILLIS);

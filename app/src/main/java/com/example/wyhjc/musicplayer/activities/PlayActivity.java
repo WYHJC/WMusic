@@ -22,13 +22,15 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.example.wyhjc.musicplayer.R;
-import com.example.wyhjc.musicplayer.music.MusicContent;
-import com.example.wyhjc.musicplayer.view.RecyclerViewAdapter;
+import com.example.wyhjc.musicplayer.adapter.RecyclerItemClickListener;
+import com.example.wyhjc.musicplayer.adapter.SongAdapter;
+import com.example.wyhjc.musicplayer.util.MusicUtil;
 
 public class PlayActivity extends PlayerActivity {
 
@@ -56,19 +58,41 @@ public class PlayActivity extends PlayerActivity {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.tracks);
         assert recyclerView != null;
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new RecyclerViewAdapter(MusicContent.ITEMS));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        SongAdapter songAdapter = new SongAdapter(MusicUtil.getSongsList());
+        recyclerView.setAdapter(songAdapter);
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
+                new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        mService.start(position);
+                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(PlayActivity.this,
+                                new Pair<>(mCoverView, ViewCompat.getTransitionName(mCoverView)),
+                                new Pair<>(mTitleView, ViewCompat.getTransitionName(mTitleView)),
+                                new Pair<>(mTimeView, ViewCompat.getTransitionName(mTimeView)),
+                                new Pair<>(mDurationView, ViewCompat.getTransitionName(mDurationView)),
+                                new Pair<>(mProgressView, ViewCompat.getTransitionName(mProgressView)),
+                                new Pair<>(mFabView, ViewCompat.getTransitionName(mFabView)));
+                        ActivityCompat.startActivity(PlayActivity.this, new Intent(PlayActivity.this, DetailActivity.class), options.toBundle());
+                    }
+
+                    @Override
+                    public void onLongClick(View view, int posotion) {
+
+                    }
+        }));
     }
 
     public void onFabClick(View view) {
         //noinspection unchecked
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this,
+        mService.play();
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(PlayActivity.this,
                 new Pair<>(mCoverView, ViewCompat.getTransitionName(mCoverView)),
                 new Pair<>(mTitleView, ViewCompat.getTransitionName(mTitleView)),
                 new Pair<>(mTimeView, ViewCompat.getTransitionName(mTimeView)),
                 new Pair<>(mDurationView, ViewCompat.getTransitionName(mDurationView)),
                 new Pair<>(mProgressView, ViewCompat.getTransitionName(mProgressView)),
                 new Pair<>(mFabView, ViewCompat.getTransitionName(mFabView)));
-        ActivityCompat.startActivity(this, new Intent(this, DetailActivity.class), options.toBundle());
+        ActivityCompat.startActivity(PlayActivity.this, new Intent(PlayActivity.this, DetailActivity.class), options.toBundle());
     }
-
 }

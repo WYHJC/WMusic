@@ -17,21 +17,44 @@
 package com.example.wyhjc.musicplayer.music;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.example.wyhjc.musicplayer.model.Song;
+import com.example.wyhjc.musicplayer.util.MusicUtil;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class PlayerService extends Service {
 
     private static final String TAG = PlayerService.class.getSimpleName();
-    private static final int DURATION = 335;
+    private static ArrayList<Song> localMusicPlaylist;
+    private static MediaPlayer mMediaPlayer;
+    private int DURATION = 0;
+    private int position = 0;
+    private static boolean paused = false;
 
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
     private Worker mWorker;
 
     public PlayerService() {
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mMediaPlayer = new MediaPlayer();
+        localMusicPlaylist = MusicUtil.getSongsList();
+        Song song = localMusicPlaylist.get(getPosition());;
+        DURATION = (int) song.getDuration() / 1000;
     }
 
     @Override
@@ -47,12 +70,38 @@ public class PlayerService extends Service {
         return super.onUnbind(intent);
     }
 
+    public int getPosition(){
+        return this.position;
+    }
+
     public void play() {
+        if (mMediaPlayer != null && !mMediaPlayer.isPlaying()){//判断当前歌曲不等于空,并且没有在播放的状态
+            mMediaPlayer.start();
+        }
         if (mWorker == null) {
             mWorker = new Worker();
             mWorker.start();
         } else {
-            mWorker.doResume();
+            mWorker.doResume(false);
+        }
+    }
+
+    public void start(int position){
+        Song song = localMusicPlaylist.get(position);
+        DURATION = (int) song.getDuration() / 1000;
+        try {
+            mMediaPlayer.reset();
+            mMediaPlayer.setDataSource(this, Uri.parse(song.getUrl()));//资源解析,Mp3地址
+            mMediaPlayer.prepare();//准备
+            mMediaPlayer.start();//开始(播放)
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (mWorker == null) {
+            mWorker = new Worker();
+            mWorker.start();
+        } else {
+            mWorker.doResume(true);
         }
     }
 
@@ -61,14 +110,17 @@ public class PlayerService extends Service {
     }
 
     public void pause() {
+        if (mMediaPlayer.isPlaying()){
+            mMediaPlayer.pause();
+        }
         if (mWorker != null) {
             mWorker.doPause();
         }
     }
 
-    public int getPosition() {
+    public int getTime() {
         if (mWorker != null) {
-            return mWorker.getPosition();
+            return mWorker.getTime();
         }
         return 0;
     }
@@ -77,26 +129,26 @@ public class PlayerService extends Service {
         return DURATION;
     }
 
-    private static class Worker extends Thread {
-
-        boolean paused = false;
-        int position = 0;
+    private class Worker extends Thread {
+        private int time = 0;
 
         @Override
         public void run() {
             try {
-                while (position < DURATION) {
+                while (time < DURATION) {
                     sleep(1000);
                     if (!paused) {
-                        position++;
+                        time++;
                     }
                 }
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 Log.d(TAG, "Player unbounded");
             }
         }
 
-        void doResume() {
+        void doResume(boolean ifNew) {
+            if(ifNew)
+                time = 0;
             paused = false;
         }
 
@@ -108,8 +160,8 @@ public class PlayerService extends Service {
             return !paused;
         }
 
-        int getPosition() {
-            return position;
+        int getTime() {
+            return time;
         }
     }
 

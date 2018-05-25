@@ -9,6 +9,7 @@
 
     <com.andremion.music.MusicCoverView
         android:id="@+id/cover"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:scaleType="centerCrop"
         android:src="@drawable/album_image0"
@@ -118,7 +119,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/playlist"
-        app:layoutManager="LinearLayoutManager"
         tools:listitem="@layout/content_list_item"/>
 
     <android.support.design.widget.FloatingActionButton
