@@ -29,6 +29,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.wyhjc.musicplayer.R;
 import com.example.wyhjc.musicplayer.music.PlayerService;
@@ -107,6 +108,15 @@ public abstract class PlayerActivity extends AppCompatActivity {
             mBound = false;
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
     }
 
     private void onBind() {

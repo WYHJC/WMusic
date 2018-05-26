@@ -27,12 +27,13 @@ import com.example.wyhjc.musicplayer.R;
 import com.example.wyhjc.musicplayer.fragment.CloudFragment;
 import com.example.wyhjc.musicplayer.fragment.MusicFragment;
 import com.example.wyhjc.musicplayer.fragment.TimeFragment;
+import com.example.wyhjc.musicplayer.music.PlayerService;
 import com.example.wyhjc.musicplayer.viewPager.CustomViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
@@ -45,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //mService.startService(new Intent(this,PlayerService.class));
+        //bindPlayerService();
+
         requestPower();
 
         mMusicImgView = (ImageView)findViewById(R.id.main_toolbar_music);
@@ -53,6 +57,14 @@ public class MainActivity extends AppCompatActivity {
         initToolbar();
         initDrawer();
         initViewPager();
+
+        //mService.startService(new Intent(this, PlayerService.class));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //unbindPlayerService();
     }
 
     private void requestPower() {

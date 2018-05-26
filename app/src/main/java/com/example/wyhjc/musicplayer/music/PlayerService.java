@@ -37,7 +37,7 @@ public class PlayerService extends Service {
     private static final String TAG = PlayerService.class.getSimpleName();
     private static ArrayList<Song> localMusicPlaylist;
     private static MediaPlayer mMediaPlayer;
-    private int DURATION = 0;
+    private static int DURATION = 0;
     private int position = 0;
     private static boolean paused = false;
 
@@ -66,7 +66,9 @@ public class PlayerService extends Service {
     public boolean onUnbind(Intent intent) {
         if (mWorker != null) {
             mWorker.interrupt();
+            mWorker = null;
         }
+        paused = false;
         return super.onUnbind(intent);
     }
 
@@ -129,7 +131,7 @@ public class PlayerService extends Service {
         return DURATION;
     }
 
-    private class Worker extends Thread {
+    private static class Worker extends Thread {
         private int time = 0;
 
         @Override

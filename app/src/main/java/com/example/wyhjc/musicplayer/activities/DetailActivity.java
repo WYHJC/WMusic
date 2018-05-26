@@ -19,6 +19,8 @@ package com.example.wyhjc.musicplayer.activities;
 import android.os.Bundle;
 import android.transition.Transition;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.andremion.music.MusicCoverView;
 import com.example.wyhjc.musicplayer.R;
@@ -27,6 +29,7 @@ import com.example.wyhjc.musicplayer.view.TransitionAdapter;
 public class DetailActivity extends PlayerActivity {
 
     private MusicCoverView mCoverView;
+    private TextView trackTitleName, trackTitleArtist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,14 @@ public class DetailActivity extends PlayerActivity {
                 mCoverView.start();
             }
         });
+
+        //trackTitleName = (TextView)
+    }
+
+    @Override
+    protected void onDestroy() {
+        Toast.makeText(this, "Detail onDestroy", Toast.LENGTH_SHORT).show();
+        super.onDestroy();
     }
 
     @Override
