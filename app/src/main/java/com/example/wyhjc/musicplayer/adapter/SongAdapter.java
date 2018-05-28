@@ -37,7 +37,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Song song = mSongsList.get(position);
-        Glide.with(mContext).load(song.getAlbumId()).into(holder.cover);
+        Glide.with(mContext).load(R.mipmap.ic_launcher).into(holder.cover);
         holder.title.setText(song.getTitle());
         holder.artist.setText(song.getArtist());
         holder.duration.setText(MusicUtil.formatTime(song.getDuration()));

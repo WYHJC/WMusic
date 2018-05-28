@@ -17,14 +17,15 @@
 package com.example.wyhjc.musicplayer.music;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.wyhjc.musicplayer.model.Song;
 import com.example.wyhjc.musicplayer.util.MusicUtil;
@@ -35,14 +36,15 @@ import java.util.ArrayList;
 public class PlayerService extends Service {
 
     private static final String TAG = PlayerService.class.getSimpleName();
-    private static ArrayList<Song> localMusicPlaylist;
+    //private ArrayList<Song> localMusicPlaylist = MusicUtil.getSongsList();
     private static MediaPlayer mMediaPlayer;
     private static int DURATION = 0;
     private int position = 0;
     private static boolean paused = false;
+    private ServiceBroadcast serviceBroadcast;
 
     // Binder given to clients
-    private final IBinder mBinder = new LocalBinder();
+    private IBinder mBinder = new LocalBinder();;
     private Worker mWorker;
 
     public PlayerService() {
@@ -52,9 +54,22 @@ public class PlayerService extends Service {
     public void onCreate() {
         super.onCreate();
         mMediaPlayer = new MediaPlayer();
-        localMusicPlaylist = MusicUtil.getSongsList();
-        Song song = localMusicPlaylist.get(getPosition());;
-        DURATION = (int) song.getDuration() / 1000;
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("com.wyhjc.service");
+        serviceBroadcast = new ServiceBroadcast();
+        registerReceiver(serviceBroadcast, intentFilter);
+//
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(serviceBroadcast);
     }
 
     @Override
@@ -64,16 +79,21 @@ public class PlayerService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        if (mWorker != null) {
-            mWorker.interrupt();
-            mWorker = null;
-        }
-        paused = false;
+//        if (mWorker != null) {
+//            mWorker.interrupt();
+//            mWorker = null;
+//        }
+//        paused = false;
         return super.onUnbind(intent);
     }
 
     public int getPosition(){
         return this.position;
+    }
+
+    public void setDURATIONView(){
+        Song song = MusicUtil.getPlaySong(0);
+        DURATION = (int) song.getDuration() / 1000;
     }
 
     public void play() {
@@ -88,8 +108,16 @@ public class PlayerService extends Service {
         }
     }
 
+    public void stopPlay(){
+        if (mWorker != null) {
+            mWorker.interrupt();
+            mWorker = null;
+        }
+        paused = false;
+    }
+
     public void start(int position){
-        Song song = localMusicPlaylist.get(position);
+        Song song = MusicUtil.getPlaySong(position);
         DURATION = (int) song.getDuration() / 1000;
         try {
             mMediaPlayer.reset();
@@ -176,6 +204,14 @@ public class PlayerService extends Service {
         public PlayerService getService() {
             // Return this instance of PlayerService so clients can call public methods
             return PlayerService.this;
+        }
+    }
+
+    private class ServiceBroadcast extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            setDURATIONView();
         }
     }
 }

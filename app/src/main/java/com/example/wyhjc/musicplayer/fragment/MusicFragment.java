@@ -1,11 +1,8 @@
 package com.example.wyhjc.musicplayer.fragment;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
@@ -16,11 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.wyhjc.musicplayer.R;
-import com.example.wyhjc.musicplayer.activities.PlayActivity;
 import com.example.wyhjc.musicplayer.adapter.MusicFragmentAdapter;
 import com.example.wyhjc.musicplayer.model.MusicFragmentItem;
 import com.example.wyhjc.musicplayer.model.Playlist;
-import com.example.wyhjc.musicplayer.model.Song;
 import com.example.wyhjc.musicplayer.util.MusicUtil;
 
 import java.util.ArrayList;

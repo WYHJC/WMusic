@@ -62,7 +62,7 @@ public class DetailActivity extends PlayerActivity {
 
     @Override
     protected void onDestroy() {
-        Toast.makeText(this, "Detail onDestroy", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Detail onDestroy", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }
 

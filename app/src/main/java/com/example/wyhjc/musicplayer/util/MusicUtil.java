@@ -16,6 +16,10 @@ public class MusicUtil {
         mSongsList = getSongs(context);
     }
 
+    public static Song getPlaySong(int position){
+        return mSongsList.get(position);
+    }
+
     public static int getLocalMusicCount(){
         return mSongsList.size();
     }

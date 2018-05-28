@@ -14,12 +14,6 @@ import com.example.wyhjc.musicplayer.music.PlayerService;
 public class BaseActivity extends AppCompatActivity {
     protected PlayerService mService;
     private boolean mBound = false;  //是否绑定
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     private final ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -35,6 +29,17 @@ public class BaseActivity extends AppCompatActivity {
             mBound = false;
         }
     };
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(this, PlayerService.class));
+    }
 
     //绑定服务
     public void bindPlayerService(){

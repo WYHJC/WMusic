@@ -14,7 +14,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -28,10 +27,14 @@ import com.example.wyhjc.musicplayer.fragment.CloudFragment;
 import com.example.wyhjc.musicplayer.fragment.MusicFragment;
 import com.example.wyhjc.musicplayer.fragment.TimeFragment;
 import com.example.wyhjc.musicplayer.music.PlayerService;
+import com.example.wyhjc.musicplayer.util.HandlerUtil;
+import com.example.wyhjc.musicplayer.view.SplashScreen;
 import com.example.wyhjc.musicplayer.viewPager.CustomViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.bmob.v3.Bmob;
 
 public class MainActivity extends BaseActivity {
 
@@ -41,15 +44,22 @@ public class MainActivity extends BaseActivity {
     private ImageView mMusicImgView, mCloudImgView;
     private ArrayList<ImageView> tabs = new ArrayList<>();
     private TimeFragment mTimeFragment;
+    private SplashScreen splashScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        splashScreen = new SplashScreen(this);
+        splashScreen.show(R.drawable.splash_screen,
+                SplashScreen.SLIDE_LEFT);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //mService.startService(new Intent(this,PlayerService.class));
-        //bindPlayerService();
+        Bmob.initialize(this, "e2dd9e79251342b7bc5ac1352375e194");
 
-        requestPower();
+        requestPower(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.INTERNET,
+                Manifest.permission.ACCESS_WIFI_STATE,
+                Manifest.permission.READ_PHONE_STATE});
 
         mMusicImgView = (ImageView)findViewById(R.id.main_toolbar_music);
         mCloudImgView = (ImageView)findViewById(R.id.main_toolbar_cloud);
@@ -58,27 +68,35 @@ public class MainActivity extends BaseActivity {
         initDrawer();
         initViewPager();
 
-        //mService.startService(new Intent(this, PlayerService.class));
+        startService(new Intent(this, PlayerService.class));
+        HandlerUtil.getInstance(this).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                splashScreen.removeSplashScreen();
+            }
+        }, 3000);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //unbindPlayerService();
+        splashScreen.removeSplashScreen();
     }
 
-    private void requestPower() {
-        //判断是否已经赋予权限
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            //如果应用之前请求过此权限但用户拒绝了请求，此方法将返回 true。
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {//这里可以写个对话框之类的项向用户解释为什么要申请权限，并在对话框的确认键后续再次申请权限
-            } else {
-                //申请权限，字符串数组内是一个或多个要申请的权限，1是申请权限结果的返回参数，在onRequestPermissionsResult可以得知申请结果
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,}, 1);
+    private void requestPower(String[] permissions) {
+        for(String permission: permissions){
+            //判断是否已经赋予权限
+            if (ContextCompat.checkSelfPermission(this,
+                    permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                //如果应用之前请求过此权限但用户拒绝了请求，此方法将返回 true。
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        permission)) {//这里可以写个对话框之类的项向用户解释为什么要申请权限，并在对话框的确认键后续再次申请权限
+                } else {
+                    //申请权限，字符串数组内是一个或多个要申请的权限，1是申请权限结果的返回参数，在onRequestPermissionsResult可以得知申请结果
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{permission}, 1);
+                }
             }
         }
     }

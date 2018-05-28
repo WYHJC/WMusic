@@ -79,7 +79,13 @@ public class PlayActivity extends BaseActivity {
         playBroadcast = new PlayBroadcast();
         registerReceiver(playBroadcast, intentFilter);
 
+        //mService.setDURATIONView();
+
         Intent intent = new Intent();
+        intent.setAction("com.wyhjc.service");
+        sendBroadcast(intent);
+
+        intent = new Intent();
         intent.setAction("com.wyhjc.play");
         sendBroadcast(intent);
 
@@ -126,10 +132,12 @@ public class PlayActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
+        mService.stopPlay();
         unbindPlayerService();
         mUpdateProgressHandler.removeMessages(0);
         unregisterReceiver(playBroadcast);
-        super.onDestroy();
+        //Toast.makeText(this, "Play onDestroy", Toast.LENGTH_SHORT).show();
     }
 
     public void onFabClick(View view) {
