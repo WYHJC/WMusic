@@ -2,8 +2,12 @@ package com.example.wyhjc.musicplayer.util;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.provider.MediaStore;
 
+import com.example.wyhjc.musicplayer.R;
 import com.example.wyhjc.musicplayer.model.Song;
 
 import java.util.ArrayList;
@@ -25,7 +29,7 @@ public class MusicUtil {
     }
 
     /**
-     * 从数据库查询MP3文件信息
+     * 从本地存储查询MP3文件信息
      * @param context
      * @return
      */
@@ -89,5 +93,29 @@ public class MusicUtil {
 
     public static ArrayList<Song> getSongsList(){
         return mSongsList;
+    }
+
+    /**
+     * 根据专辑ID获取专辑封面图
+     * @param album_id 专辑ID
+     * @return
+     */
+    public static Bitmap getAlbumArt(Context context, long album_id) {
+        String mUriAlbums = "content://media/external/audio/albums";
+        String[] projection = new String[]{"album_art"};
+        Cursor cur = context.getContentResolver().query(Uri.parse(mUriAlbums + "/" + Long.toString(album_id)), projection, null, null, null);
+        String album_art = null;
+        if (cur.getCount() > 0 && cur.getColumnCount() > 0) {
+            cur.moveToNext();
+            album_art = cur.getString(0);
+        }
+        cur.close();
+        Bitmap bm = null;
+        if (album_art != null) {
+            bm = BitmapFactory.decodeFile(album_art);
+        } else {
+            bm = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+        }
+        return bm;
     }
 }

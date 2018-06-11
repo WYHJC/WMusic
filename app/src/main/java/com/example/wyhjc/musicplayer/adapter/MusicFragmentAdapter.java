@@ -16,8 +16,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.wyhjc.musicplayer.R;
 import com.example.wyhjc.musicplayer.activities.PlayActivity;
+import com.example.wyhjc.musicplayer.dao.PlaylistManager;
 import com.example.wyhjc.musicplayer.model.MusicFragmentItem;
 import com.example.wyhjc.musicplayer.model.Playlist;
+import com.example.wyhjc.musicplayer.util.MusicUtil;
 
 import java.util.ArrayList;
 
@@ -29,9 +31,11 @@ public class MusicFragmentAdapter extends RecyclerView.Adapter<MusicFragmentAdap
     private ArrayList mItemResults = new ArrayList<>();
     private ArrayList<Playlist> mCreatePlaylists = new ArrayList<Playlist>();
     private ArrayList<Playlist> mCollectPlaylists = new ArrayList<Playlist>();
+    private PlaylistManager mPlaylistManager = null;
 
     public MusicFragmentAdapter(Context context){
         this.mContext = context;
+        mPlaylistManager = PlaylistManager.getInstance(mContext);
     }
 
     //刷新列表，包括总列表，创建的歌单列表，收藏的歌单列表
@@ -81,7 +85,6 @@ public class MusicFragmentAdapter extends RecyclerView.Adapter<MusicFragmentAdap
         switch (getItemViewType(position)){
             case 0:
                 MusicFragmentItem item = (MusicFragmentItem) mItemResults.get(position);
-                //Glide.with(mContext).load(item.getImageID()).into(holder.musicItemImage);
                 holder.musicItemImage.setImageResource(item.getImageID());
                 holder.musicItemtitle.setText(item.getTitle());
                 holder.musicItemCount.setText("(" + item.getCount() + ")");
@@ -94,14 +97,14 @@ public class MusicFragmentAdapter extends RecyclerView.Adapter<MusicFragmentAdap
                         Glide.with(mContext).load(playlist.getImageID()).into(holder.playlistItemImage);
                     }
                     holder.playlistItemTitle.setText(playlist.getName());
-                    holder.playlistItemCount.setText(playlist.getCount() + "首");
+                    holder.playlistItemCount.setText(playlist.getCount() + " songs");
                 }
                 if (collectExpand && !playlist.getAuthor().equals("local")) {
                     if (playlist.getImageID() != -1){
                         Glide.with(mContext).load(playlist.getImageID()).into(holder.playlistItemImage);
                     }
                     holder.playlistItemTitle.setText(playlist.getName());
-                    holder.playlistItemCount.setText(playlist.getCount() + "首");
+                    holder.playlistItemCount.setText(playlist.getCount() + " songs");
                 }
                 break;
             case 2:
@@ -156,8 +159,15 @@ public class MusicFragmentAdapter extends RecyclerView.Adapter<MusicFragmentAdap
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Intent intent = new Intent(mContext, PlayActivity.class);
-                                //intent.putExtra("page_number", 0);
+                                Intent intent = new Intent();
+                                intent.setAction("com.wyhjc.service");
+                                intent.putExtra("type", 0);
+                                mContext.getApplicationContext().sendBroadcast(intent);
+
+                                intent = new Intent(mContext, PlayActivity.class);
+                                intent.putExtra("type", 0);
+                                intent.putExtra("name", "Local music");
+                                intent.putExtra("count", MusicUtil.getLocalMusicCount());
                                 mContext.startActivity(intent);
                             }
                         }, 60);
@@ -173,7 +183,15 @@ public class MusicFragmentAdapter extends RecyclerView.Adapter<MusicFragmentAdap
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Intent intent = new Intent(mContext, PlayActivity.class);
+                                Intent intent = new Intent();
+                                intent.setAction("com.wyhjc.service");
+                                intent.putExtra("type", 1);
+                                mContext.getApplicationContext().sendBroadcast(intent);
+
+                                intent = new Intent(mContext, PlayActivity.class);
+                                intent.putExtra("type", 1);
+                                intent.putExtra("name", "Recent play");
+                                intent.putExtra("count", mPlaylistManager.getRecentPlaySize());
                                 mContext.startActivity(intent);
                             }
                         }, 60);

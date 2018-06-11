@@ -1,20 +1,4 @@
-/*
- * Copyright (c) 2016. André Mion
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.example.wyhjc.musicplayer.music;
+package com.example.wyhjc.musicplayer.service;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -27,7 +11,11 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.example.wyhjc.musicplayer.dao.MusicSQLite;
+import com.example.wyhjc.musicplayer.dao.PlaylistManager;
+import com.example.wyhjc.musicplayer.manager.UserManager;
 import com.example.wyhjc.musicplayer.model.Song;
+import com.example.wyhjc.musicplayer.model.User;
 import com.example.wyhjc.musicplayer.util.MusicUtil;
 
 import java.io.IOException;
@@ -36,12 +24,13 @@ import java.util.ArrayList;
 public class PlayerService extends Service {
 
     private static final String TAG = PlayerService.class.getSimpleName();
-    //private ArrayList<Song> localMusicPlaylist = MusicUtil.getSongsList();
+    private ArrayList<Song> mPlaylist = new ArrayList<Song>();
     private static MediaPlayer mMediaPlayer;
     private static int DURATION = 0;
     private int position = 0;
     private static boolean paused = false;
     private ServiceBroadcast serviceBroadcast;
+    private PlaylistManager mPlaylistManager;
 
     // Binder given to clients
     private IBinder mBinder = new LocalBinder();;
@@ -58,7 +47,7 @@ public class PlayerService extends Service {
         intentFilter.addAction("com.wyhjc.service");
         serviceBroadcast = new ServiceBroadcast();
         registerReceiver(serviceBroadcast, intentFilter);
-//
+        mPlaylistManager = PlaylistManager.getInstance(this);
     }
 
     @Override
@@ -70,6 +59,7 @@ public class PlayerService extends Service {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(serviceBroadcast);
+        mMediaPlayer.release();
     }
 
     @Override
@@ -87,13 +77,12 @@ public class PlayerService extends Service {
         return super.onUnbind(intent);
     }
 
-    public int getPosition(){
-        return this.position;
+    public ArrayList<Song> getPlaylist(){
+        return mPlaylist;
     }
 
-    public void setDURATIONView(){
-        Song song = MusicUtil.getPlaySong(0);
-        DURATION = (int) song.getDuration() / 1000;
+    public int getPosition(){
+        return this.position;
     }
 
     public void play() {
@@ -117,13 +106,22 @@ public class PlayerService extends Service {
     }
 
     public void start(int position){
-        Song song = MusicUtil.getPlaySong(position);
+        //Song song = MusicUtil.getPlaySong(position);
+        Song song = mPlaylist.get(position);
+        this.position = position;
         DURATION = (int) song.getDuration() / 1000;
         try {
             mMediaPlayer.reset();
             mMediaPlayer.setDataSource(this, Uri.parse(song.getUrl()));//资源解析,Mp3地址
             mMediaPlayer.prepare();//准备
-            mMediaPlayer.start();//开始(播放)
+            mMediaPlayer.start();//开始(播放);
+            UserManager userManager = UserManager.getInstance();
+            String id;
+            if(userManager.isLogined())
+                id = userManager.getUser().getId();
+            else
+                id = "";
+            mPlaylistManager.addRecentPlay(song, id);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -146,6 +144,14 @@ public class PlayerService extends Service {
         if (mWorker != null) {
             mWorker.doPause();
         }
+    }
+
+    public String getSongName(){
+        return mPlaylist.get(getPosition()).getTitle();
+    }
+
+    public String getSongArtist(){
+        return mPlaylist.get(getPosition()).getArtist();
     }
 
     public int getTime() {
@@ -207,11 +213,37 @@ public class PlayerService extends Service {
         }
     }
 
+    /**
+     * 接收广播
+     * 更新播放列表
+     */
     private class ServiceBroadcast extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            setDURATIONView();
+            int type = intent.getExtras().getInt("type");
+            updatePlaylist(type);
+        }
+
+        /**
+         * 更新播放列表
+         * 0：本地音乐列表
+         * 1：最近播放列表
+         * 2：下载歌曲列表
+         * @param type
+         */
+        private void updatePlaylist(int type){
+            switch (type){
+                case 0:
+                    mPlaylist = MusicUtil.getSongsList();
+                    break;
+                case 1:
+                    mPlaylist = mPlaylistManager.getRecentPlay();
+                    break;
+                case 2:
+                    mPlaylist = mPlaylistManager.getDownload();
+            }
+            DURATION = (int)mPlaylist.get(0).getDuration()/1000;
         }
     }
 }

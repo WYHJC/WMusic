@@ -26,7 +26,7 @@ import com.example.wyhjc.musicplayer.R;
 import com.example.wyhjc.musicplayer.fragment.CloudFragment;
 import com.example.wyhjc.musicplayer.fragment.MusicFragment;
 import com.example.wyhjc.musicplayer.fragment.TimeFragment;
-import com.example.wyhjc.musicplayer.music.PlayerService;
+import com.example.wyhjc.musicplayer.service.PlayerService;
 import com.example.wyhjc.musicplayer.util.HandlerUtil;
 import com.example.wyhjc.musicplayer.view.SplashScreen;
 import com.example.wyhjc.musicplayer.viewPager.CustomViewPager;
@@ -56,10 +56,12 @@ public class MainActivity extends BaseActivity {
         Bmob.initialize(this, "e2dd9e79251342b7bc5ac1352375e194");
 
         requestPower(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.ACCESS_NETWORK_STATE,
                 Manifest.permission.INTERNET,
                 Manifest.permission.ACCESS_WIFI_STATE,
                 Manifest.permission.READ_PHONE_STATE});
+        startService(new Intent(this, PlayerService.class));
 
         mMusicImgView = (ImageView)findViewById(R.id.main_toolbar_music);
         mCloudImgView = (ImageView)findViewById(R.id.main_toolbar_cloud);
@@ -68,7 +70,6 @@ public class MainActivity extends BaseActivity {
         initDrawer();
         initViewPager();
 
-        startService(new Intent(this, PlayerService.class));
         HandlerUtil.getInstance(this).postDelayed(new Runnable() {
             @Override
             public void run() {

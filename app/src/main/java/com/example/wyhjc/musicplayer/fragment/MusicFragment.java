@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 
 import com.example.wyhjc.musicplayer.R;
 import com.example.wyhjc.musicplayer.adapter.MusicFragmentAdapter;
+import com.example.wyhjc.musicplayer.dao.PlaylistManager;
+import com.example.wyhjc.musicplayer.manager.UserManager;
 import com.example.wyhjc.musicplayer.model.MusicFragmentItem;
 import com.example.wyhjc.musicplayer.model.Playlist;
 import com.example.wyhjc.musicplayer.util.MusicUtil;
@@ -82,10 +84,20 @@ public class MusicFragment extends Fragment {
         ArrayList<Playlist> createPlaylists = new ArrayList<Playlist>();
         ArrayList<Playlist> collectPlaylists = new ArrayList<Playlist>();
         MusicUtil.initLocalAllPlaylists(mContext);
+        PlaylistManager playlistManager = PlaylistManager.getInstance(mContext);
+        UserManager userManager = UserManager.getInstance();
+        if(userManager.isLogined()){
+            playlistManager.queryRecentPlay(userManager.getUser().getId());
+            playlistManager.queryDownload(userManager.getUser().getId());
+        }
+        else{
+            playlistManager.queryRecentPlay("");
+            playlistManager.queryDownload("");
+        }
 
         items.add(new MusicFragmentItem(R.mipmap.music_fragment_local_music, "Local music", MusicUtil.getLocalMusicCount()));
-        items.add(new MusicFragmentItem(R.mipmap.music_fragment_recent_play, "Recent play", 0));
-        items.add(new MusicFragmentItem(R.mipmap.music_fragment_download, "Download", 0));
+        items.add(new MusicFragmentItem(R.mipmap.music_fragment_recent_play, "Recent play", playlistManager.getRecentPlaySize()));
+        items.add(new MusicFragmentItem(R.mipmap.music_fragment_download, "Download", playlistManager.getDownloadSize()));
         results.addAll(items);
 
         createPlaylists.add(new Playlist(0, R.drawable.playlist_image1, "My favorite music", 2, "hjc"));

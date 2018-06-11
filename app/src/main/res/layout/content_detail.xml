@@ -9,7 +9,6 @@
 
     <com.andremion.music.MusicCoverView
         android:id="@+id/cover"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_centerInParent="true"
         android:scaleType="centerInside"

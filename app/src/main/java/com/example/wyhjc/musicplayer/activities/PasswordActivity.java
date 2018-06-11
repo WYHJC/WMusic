@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.wyhjc.musicplayer.R;
 import com.example.wyhjc.musicplayer.model.User;
+import com.example.wyhjc.musicplayer.util.MD5Util;
 
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -44,8 +45,8 @@ public class PasswordActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 User user = new User();
-                user.setPhone(phone);
-                user.setPassword(mPasswordEdit.getText().toString());
+                user.setPhone(MD5Util.encodeToHex(phone));
+                user.setPassword(MD5Util.encodeToHex(mPasswordEdit.getText().toString()));
                 user.save(new SaveListener<String>() {
                     @Override
                     public void done(String s, BmobException e) {
